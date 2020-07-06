@@ -1,6 +1,8 @@
 package com.example.simplechat;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,8 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.util.ArrayList;
+
 public class ChatActivity extends AppCompatActivity {
     static final String TAG = ChatActivity.class.getSimpleName();
     static final String USER_ID_KEY = "userId";
@@ -24,6 +28,13 @@ public class ChatActivity extends AppCompatActivity {
 
     EditText etMessage;
     Button btSend;
+
+    RecyclerView rvChat;
+    ArrayList<Message> mMessages;
+    ChatAdapter mAdapter;
+    //Keep track of the initial load to scroll to the bottom of ListView
+    boolean mFirstLoad;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +56,21 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+    //Setup message field and posting
     void setupMessagePosting() {
         //fnd the text field and button
-        etMessage = findViewById(R.id.etMessage);
-        btSend = findViewById(R.id.btSend);
+        etMessage = (EditText) findViewById(R.id.etMessage);
+        btSend = (Button) findViewById(R.id.btSend);
+        rvChat = (RecyclerView) findViewById(R.id.rvChat);
+        mMessages = new ArrayList<>();
+        mFirstLoad = true;
+        final String userId = ParseUser.getCurrentUser().getObjectId();
+        mAdapter = new ChatAdapter(ChatActivity.this, userId, mMessages);
+        rvChat.setAdapter(mAdapter);
+
+        //associate the layout manager with the Recycler View
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ChatActivity.this);
+        rvChat.setLayoutManager(linearLayoutManager);
 
         //When send button is clicked create message object on Parse
         btSend.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +110,10 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    void refreshMessages(){
+        //TODO: 
     }
     
     
