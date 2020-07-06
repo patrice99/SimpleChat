@@ -1,17 +1,19 @@
 package com.example.simplechat;
 
+import com.parse.ParseClassName;
 import com.parse.ParseObject;
 
+@ParseClassName("Message")
 public class Message extends ParseObject {
     //This model class will provide message data for the RecyclerView and will be used to retrieve and save messages to Parse
     public static final String USER_ID_KEY = "userId";
     public static final String BODY_KEY = "body";
 
-    public String getUserIdKey() {
+    public String getUserId() {
         return getString(USER_ID_KEY);
     }
 
-    public String getBodyKey() {
+    public String getBody() {
         return getString(BODY_KEY);
     }
 
