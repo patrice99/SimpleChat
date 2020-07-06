@@ -55,9 +55,11 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String data = etMessage.getText().toString();
-                ParseObject message = ParseObject.create("Message");
-                message.put(USER_ID_KEY, ParseUser.getCurrentUser().getObjectId());
-                message.put(BODY_KEY, data);
+
+                //Using new 'Message' Parsed-back model now
+                Message message = new Message();
+                message.setBody(data);
+                message.setUserId(ParseUser.getCurrentUser().getObjectId());
                 message.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
