@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -39,6 +40,17 @@ public class ChatActivity extends AppCompatActivity {
     //Keep track of the initial load to scroll to the bottom of ListView
     boolean mFirstLoad;
 
+    // Create a handler which can run code periodically . This is primitive polling
+    static final int POLL_INTERVAL = 1000; // milliseconds
+    Handler myHandler = new android.os.Handler();
+    Runnable mRefreshMessagesRunnable = new Runnable() {
+        @Override
+        public void run() {
+            refreshMessages();
+            myHandler.postDelayed(this, POLL_INTERVAL);
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +63,8 @@ public class ChatActivity extends AppCompatActivity {
         } else { //if not login with an anonymous user 
             login();
         }
+
+        myHandler.postDelayed(mRefreshMessagesRunnable, POLL_INTERVAL);
     }
 
 
@@ -74,6 +88,7 @@ public class ChatActivity extends AppCompatActivity {
 
         //associate the layout manager with the Recycler View
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ChatActivity.this);
+        linearLayoutManager.setReverseLayout(true);
         rvChat.setLayoutManager(linearLayoutManager);
 
         //When send button is clicked create message object on Parse
