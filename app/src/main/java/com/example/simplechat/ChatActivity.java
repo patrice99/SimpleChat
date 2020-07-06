@@ -31,6 +31,8 @@ public class ChatActivity extends AppCompatActivity {
     // get the user ID from the cached currentUser object
     private void startWithCurrentUser() {
         //TODO
+
+        
     }
 
     void login(){
