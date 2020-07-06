@@ -11,20 +11,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseAnonymousUtils;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
     static final String TAG = ChatActivity.class.getSimpleName();
     static final String USER_ID_KEY = "userId";
     static final String BODY_KEY = "body";
+    static final int MAX_CHAT_MESSAGES_TO_SHOW = 50;
 
     EditText etMessage;
     Button btSend;
@@ -112,8 +116,37 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+    //Query messages from Parse so we can load them into the chat adapter
     void refreshMessages(){
-        //TODO: 
+        //Construct query to execute
+        ParseQuery<Message> query = ParseQuery.getQuery(Message.class);
+
+        //Configure limit and sort order
+        query.setLimit(MAX_CHAT_MESSAGES_TO_SHOW);
+
+        //get the latest 50 messages, order will show up newest to oldest of this group
+        query.orderByDescending("createdAt");
+
+        //Execute query to fetch all messages from Parse asynchronously
+        //This is equivalent to a SELECT query with SQL
+
+        query.findInBackground(new FindCallback<Message>() {
+            @Override
+            public void done(List<Message> messages, ParseException e) {
+                if (e == null) {
+                    mMessages.clear();
+                    mMessages.addAll(messages);
+                    mAdapter.notifyDataSetChanged(); //update adapter
+                    //scroll to the bottom of the list on initial load
+                    if (mFirstLoad){
+                        rvChat.scrollToPosition(0);
+                        mFirstLoad = false;
+                    } else {
+                        Log.e("message", "Error loading messages", e);
+                    }
+                }
+            }
+        });
     }
     
     
